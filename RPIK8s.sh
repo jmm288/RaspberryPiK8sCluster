@@ -37,7 +37,7 @@ for leaf; do
     # Wait 1 minute for reboot and 1 minute for server(s) to come back up.
     sleep 120
     # Ssh back into master node, install microk8s, add user permissions to access microk8s, add master node, grep on output to get 1st join command.
-    MICROK8_JOIN_COMMAND=$(ssh $RPI_MASTER_SSH_USER@$RPI_MASTERIP "sudo snap install microk8s --classic && sudo usermod -a -G microk8s $RPI_MASTER_SSH_USER && /snap/bin/microk8s.add-node | grep $RPI_MASTERIP -m 1")
+    MICROK8_JOIN_COMMAND=$(ssh $RPI_MASTER_SSH_USER@$RPI_MASTERIP "sudo snap install microk8s --classic > /dev/null && sleep 60 && sudo usermod -a -G microk8s $RPI_MASTER_SSH_USER && /snap/bin/microk8s.add-node | grep $RPI_MASTERIP -m 1")
     echo "Join command: $MICROK8_JOIN_COMMAND"
   else
     echo "workers: $leaf"
@@ -46,7 +46,7 @@ for leaf; do
     # Wait 1 minute for reboot and 1 minute for server(s) to come back up.
     sleep 120
     # Ssh into leaf node(s), install microk8s, install snap, add user permissions to access microk8s, add leaf node to cluster.
-    ssh $RPI_LEAF_SSH_USER@$leaf "sudo snap install microk8s --classic && sudo usermod -a -G microk8s $RPI_LEAF_SSH_USER && /snap/bin/$MICROK8_JOIN_COMMAND"
+    ssh $RPI_LEAF_SSH_USER@$leaf "sudo snap install microk8s --classic && sleep 60 && sudo usermod -a -G microk8s $RPI_LEAF_SSH_USER && /snap/bin/$MICROK8_JOIN_COMMAND"
   fi
 done
 
